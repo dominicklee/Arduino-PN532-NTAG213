@@ -4,20 +4,22 @@ This repository contains functions and examples designed for Arduino enthusiasts
 ## Overview ##
 The **PN532** is a well supported chip that was made into various modules by creators such as Seed Studio, Adafruit, and Elechouse. The hardware modules are very nicely designed by these companies. However, the approach to making a working implementation using a **PN532** reader with an **ESP8266** microcontroller is not so direct. It is even more rare to find examples on how to read, write, and erase the memory on an **NTAG213** tag (NFC forum type 2) using this implementation. These are all very common items and can be purchases on Amazon or eBay.
 
-There are many ways to interface with the PN532 such as HSU (UART), SPI, and I2C. The aim of this repository is not to "fork" or recreate any existing work. It is not to create a bias toward any type of RF tag whatsoever. It is rather to share my reliably implemented functions and examples of storing various pieces of text on an NFC tag and reading them quickly.
+There are many ways to interface with the PN532 such as **HSU (UART), SPI, and I2C**. The aim of this repository is not to "fork" or recreate any existing work. It is not to create a bias toward any type of RF tag whatsoever. It is rather to **share my reliably implemented functions and examples** of storing various pieces of text on an NFC tag and reading them quickly.
 
-Having read forums and stories of people with trouble getting reliable NFC readings, I took the challenge of creating my own examples and tutorial for getting this to work. Although NFC is still not supported in some phones, it is widely supported by name brands. By making hardware that uses NFC to connect, we can easily share information between keychains, cups, and other NFC-enabled objects.
+Having read forums and stories of people with trouble getting reliable NFC readings, I took the challenge of creating my own examples and tutorial for getting this to work. Although NFC is still not supported in some phones, it is widely supported by name brands. By making hardware that uses NFC to connect, we can **easily share information** between keychains, cups, and other NFC-enabled objects.
 
 ## Hardware Setup ##
-The goal is to aim for a **simple setup**. If possible, my preference was to aim for I2C communications on the PN532. However, it seems that the I2C implementations on all  these libraries do not play well with the ESP8266 because apparently the PN532 uses clock stretching and the microcontroller does not have hardware capabilities. Although we could use a library for I2C clock stretching (such as [https://github.com/pasko-zh/brzo_i2c](https://github.com/pasko-zh/brzo_i2c)), I decided to go with an easier approach which is UART.
+The goal is to aim for a **simple setup**. If possible, my preference was to aim for I2C communications on the PN532. However, it seems that the **I2C implementations on these libraries do not play well with the ESP8266** because apparently the PN532 uses clock stretching and the microcontroller does not have hardware capabilities. Although we could use a library for I2C clock stretching (such as [https://github.com/pasko-zh/brzo_i2c](https://github.com/pasko-zh/brzo_i2c)), I decided to go with an easier approach which is HSU (UART).
 
 The PN532 module has a mode called **HSU** which is high speed UART. To use HSU mode, flip both dip switches to **OFF**. So now we can now interact via UART. 
 
 Connect the PN532 module using pins such as **D2 for RX and D1 for TX**. In some cases, it would be helpful to solder 10k pullup resistors to these lines. In other words, a resistor from RX to 3.3V and another resistor from TX to 3.3V. This depends on the microcontroller you use.
 
-Now connect **3.3V** from ESP8266 to the VCC of PN532. Do not use 5V as this will take the logic levels to 5V which may fry the ESP8266.  Connect the **GND** terminals.
+Now connect **3.3V** from ESP8266 to the VCC of PN532. Do not use 5V as this will take the logic levels to 5V which may fry the ESP8266.  Connect the **GND** terminals. Refer to the wiring diaram for details.
 
-## NFC Protcol Concepts ##
+![Wiring Diagram](https://raw.githubusercontent.com/dominicklee/Arduino-PN532-NTAG213/master/PN532%20wiring.png)
+
+## NFC Protocol Concepts ##
 Before we jump into the code examples, it is highly recommended to learn more about how to manipulate the data in an NFC tag such as NTAG213. This info is just enough to get you familiarized with some terminology and concepts to get an understanding of what the code does and how we will interact with it.
 
 NFC tags start their formatting with something known as a Type Name Format Field (**TNF Field**). This is a 3-bit value that sets the type of data we will store in our tag. In all our examples, we will write using the **Well-Known Record** (0x01) identifier since we are just storing one or more lines of text.
@@ -100,18 +102,18 @@ Persistent data gets stored in the first 4 pages (16 bytes) of the tag. This is 
 The examples above show data ranging from payloads that contain 1 to 4 lines of text. The total payload bytes can be calculated by: `total bytes - 8` because we exclude the first 8 bytes.
 
 ## Code Usage ##
-Now that we connected the PN532 module to the ESP8266, we will set up the Arduino IDE. If you have not done so already, download and install the [PN532 library from Elechouse](https://github.com/elechouse/PN532). 
+Now that we connected the PN532 module to the ESP8266, we will set up the Arduino IDE. If you have not done so already, download and **install** the [PN532 library from Elechouse](https://github.com/elechouse/PN532). 
 
-We won't use their examples but will need some code from their library. The main folders of their library we use will be `PN532_SWHSU` and `PN532`. You can exclude the other folders if you desire. The reason why we use `PN532_SWHSU` and not `PN532_HSU` is because we want to use custom pins for RX and TX using SoftwareSerial.
+We won't use their examples but will need some code from their library. The main folders of their library we use will be `PN532_SWHSU` and `PN532`. You can exclude the other folders if you desire. The reason why we use `PN532_SWHSU` and not `PN532_HSU` is because we want to use **custom pins for RX and TX** using SoftwareSerial. You cannot upload to the ESP8266 when you block your main hardware serial pins.
 
 ### Getting UID of tag ###
 The example `NFC_getTagUID.ino` reads an NFC tag to get its UID. This is an identifier that is unique, like a serial number. It is good for security and authentication purposes because it is difficult for UID to be forged.
 
 ### Reading text from tag ###
-The example `NFC_readTag.ino` reads the data of a tag and prints out the various text lines.
+The example `NFC_readTag.ino` reads the data of a tag and prints out the various text lines, which are stored in a string array.
 
 ### Writing text to tag ###
-The example `NFC_writeTag.ino` writes an array of strings to a tag and prints out the various lines written.
+The example `NFC_writeTag.ino` writes a string array to a tag and prints out the various lines written.
 
 ### Formatting data on a tag ###
 The example `NFC_formatTag.ino` will erase and format a tag (as long as it is not password protected). 
