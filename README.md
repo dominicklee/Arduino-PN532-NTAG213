@@ -2,7 +2,7 @@
 This repository contains functions and examples designed for Arduino enthusiasts (especially ESP8266 users) to read, write, and format NTAG213 tags using a PN532 based reader.
 
 ## Overview ##
-The **PN532** is a well supported chip that was made into various modules by creators such as Seed Studio, Adafruit, and Elechouse. The hardware modules are very nicely designed by these companies. However, the approach to making a working implementation using a **PN532** reader with an **ESP8266** microcontroller is not so direct. It is even more rare to find examples on how to read, write, and erase the memory on an **NTAG213** tag (NFC forum type 2) using this implementation. These are all very common items and can be purchases on Amazon or eBay.
+The **PN532** is a well supported chip that was made into various modules by creators such as Seed Studio, Adafruit, and Elechouse. The hardware modules are very nicely designed by these companies. However, the approach to making a working implementation using a **PN532** reader with an **ESP8266** microcontroller is not so direct. It is even more rare to find examples on how to read, write, and erase the memory on an **NTAG213** tag (NFC forum type 2) using this implementation. These are all very common items and can be purchased on Amazon or eBay.
 
 There are many ways to interface with the PN532 such as **HSU (UART), SPI, and I2C**. The aim of this repository is not to "fork" or recreate any existing work. It is not to create a bias toward any type of RF tag whatsoever. It is rather to **share my reliably implemented functions and examples** of storing various pieces of text on an NFC tag and reading them quickly.
 
@@ -149,8 +149,9 @@ And you can wait until a tag is removed through this code:
     }
 ```
 
-Don't remove the delay code or set it too low, as it can crash the ESP watchdog.
+Don't remove the delay code or set it too low, as it can crash the ESP watchdog. A non-blocking solution will be coming soon.
 
+Feel free to reach out to me if you have any questions or would like to request for a custom-solution.
 
 ## Other Info ##
 
