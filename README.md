@@ -121,6 +121,36 @@ The example `NFC_formatTag.ino` will erase and format a tag (as long as it is no
 ### NFC Example Template ###
 The example `NFC_functions.ino` contains **all the functions** of  the above examples. Using this as your next template, you can design new firmware for your project and be creative. 
 
+In this template, you have access to call these functions:
+```C++
+void readTag(bool verbose = true);
+void writeTag(String textLines[10], int numLines);
+void eraseTag(void);
+void getTagUID(void);
+```
+
+However, prior to calling these functions, you **must ensure** a tag is near the reader. You can wait for a user to put a tag near the reader using this line:
+
+```C++
+    // wait until a tag is present
+    while (!nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength)) {
+      Serial.println("waiting for a tag");
+      delay(1000);
+    }
+```
+
+And you can wait until a tag is removed through this code:
+
+```C++
+    // wait until the tag is removed
+    while (nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength)) {
+      Serial.println("please remove tag");
+      delay(1000);
+    }
+```
+
+Don't remove the delay code or set it too low, as it can crash the ESP watchdog.
+
 
 ## Other Info ##
 
